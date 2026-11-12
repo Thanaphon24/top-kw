@@ -113,7 +113,10 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 function pick(code,n,topics){
   let ids=KW[code].q.map((q,i)=>i+1);
   if(topics) ids=ids.filter(i=>topics.includes(KW[code].q[i-1][0]));
-  return shuffle(ids).slice(0,n).sort((a,b)=>a-b).map(i=>({s:code,n:i}));
+  /* เลือกข้อที่ยังไม่เคยออกก่อน จนกว่าจะกดรีเซ็ตคะแนน */
+  const seen=new Set((store.get("kw_seen",{})[code])||[]);
+  const fresh=shuffle(ids.filter(i=>!seen.has(i))), used=shuffle(ids.filter(i=>seen.has(i)));
+  return fresh.concat(used).slice(0,n).sort((a,b)=>a-b).map(i=>({s:code,n:i}));
 }
 function fmt(sec){sec=Math.max(0,sec|0);const h=sec/3600|0,m=(sec%3600)/60|0,s=sec%60;return (h?h+":":"")+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
 const Q=it=>KW[it.s].q[it.n-1];
@@ -124,6 +127,7 @@ $("#bankinfo").textContent="คลังข้อสอบ "+total.toLocaleStrin
 function home(){
   clearInterval(tick); S=null;
   const saved=store.get("kw_session",null), hist=store.get("kw_hist",[]);
+  const nSeen=Object.values(store.get("kw_seen",{})).reduce((a,v)=>a+v.length,0);
   const subjBtn=c=>`<button class="subj" data-practice="${c}"><span class="grow"><strong>${esc(KW[c].en)}</strong><br><span class="muted">${esc(KW[c].th)}</span></span><span class="n">${KW[c].q.length} ข้อ</span></button>`;
   app.innerHTML=`
   ${saved&&!saved.done?`<div class="card" style="border-color:var(--accent)"><div class="row"><div class="grow"><h2>มีข้อสอบที่ทำค้างไว้</h2><p class="muted">${esc(saved.title)} · ตอบแล้ว ${Object.keys(saved.ans).length}/${saved.items.length} ข้อ</p></div><button class="btn" id="resume">ทำต่อ</button><button class="btn ghost" id="discard">ทิ้ง</button></div></div>`:""}
@@ -161,13 +165,15 @@ function home(){
     <h3>ฝึกเพิ่มเติม</h3><div class="list">${subjBtn("or")}</div>
     <p class="muted">Operations Research ไม่อยู่ในรายวิชาสอบของสาขาอุตสาหการตามประกาศปัจจุบัน จึงไม่ถูกสุ่มในโหมดสอบเสมือนจริง</p>
   </div>
-  ${hist.length?`<div class="card"><div class="row"><h2 class="grow">ผลสอบที่ผ่านมา</h2><button class="btn ghost sm" id="clearHist">ล้างประวัติ</button></div><table><tr><th>วันที่</th><th>ชุด</th><th class="num">คะแนน</th><th class="num">%</th></tr>${hist.slice().reverse().slice(0,10).map(h=>`<tr><td>${new Date(h.t).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"})}</td><td>${esc(h.title)}</td><td class="num">${h.score}/${h.total}</td><td class="num ${h.score/h.total*100>=PASS?"pass":"fail"}">${Math.round(h.score/h.total*100)}</td></tr>`).join("")}</table></div>`:""}`;
+  <div class="card"><div class="row"><div class="grow"><h2>ผลสอบที่ผ่านมา</h2><p class="muted">ข้อสอบเสมือนจริงออกไปแล้ว ${nSeen.toLocaleString()} ข้อ · ชุดถัดไปจะสุ่มจากข้อที่ยังไม่เคยออกก่อน</p></div><button class="btn danger sm" id="clearHist">รีเซ็ตคะแนน</button></div>
+  ${hist.length?`<table><tr><th>วันที่</th><th>ชุด</th><th class="num">คะแนน</th><th class="num">%</th></tr>${hist.slice().reverse().slice(0,10).map(h=>`<tr><td>${new Date(h.t).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"})}</td><td>${esc(h.title)}</td><td class="num">${h.score}/${h.total}</td><td class="num ${h.score/h.total*100>=PASS?"pass":"fail"}">${Math.round(h.score/h.total*100)}</td></tr>`).join("")}</table>`:'<p class="muted">ยังไม่มีผลสอบ</p>'}
+  <p class="muted">รีเซ็ตคะแนนจะล้างผลสอบ ข้อสอบที่ทำค้าง และประวัติข้อที่เคยออก แล้วเริ่มสุ่มข้อสอบใหม่จากคลังทั้งหมด</p></div>`;
   const timed=n=>$(`input[name=${n}]:checked`).value==="1";
   $("#startBasic").onclick=()=>start({mode:"exam",title:"สอบเสมือนจริง หมวดวิชาพื้นฐาน",items:BASIC.flatMap(c=>pick(c,PER)),limit:timed("tb")?LIMIT:0});
   $("#startSpec").onclick=()=>{const e=$("#elec").value;start({mode:"exam",title:"สอบเสมือนจริง หมวดวิชาเฉพาะ (เลือก "+KW[e].en+")",items:[...REQ,e].flatMap(c=>pick(c,PER)),limit:timed("ts")?LIMIT:0})};
   app.querySelectorAll("[data-practice]").forEach(b=>b.onclick=()=>setup(b.dataset.practice));
   if($("#resume")){$("#resume").onclick=()=>{S=saved;S.t0=Date.now()-S.elapsed*1000;run()};$("#discard").onclick=()=>{store.del("kw_session");home()}}
-  if($("#clearHist"))$("#clearHist").onclick=()=>{store.del("kw_hist");home()};
+  $("#clearHist").onclick=e=>{const b=e.currentTarget;if(!b.dataset.ok){b.dataset.ok=1;b.textContent="กดอีกครั้งเพื่อยืนยันการรีเซ็ต";return}["kw_hist","kw_seen","kw_session"].forEach(k=>store.del(k));home()};
   scrollTo(0,0);
 }
 
@@ -200,7 +206,11 @@ function setup(code){
 }
 
 /* ---------- ทำข้อสอบ ---------- */
-function start(o){S={...o,ans:{},flag:{},i:0,elapsed:0,t0:Date.now(),done:false};save();run()}
+function start(o){
+  S={...o,ans:{},flag:{},i:0,elapsed:0,t0:Date.now(),done:false};
+  if(S.mode==="exam"){const seen=store.get("kw_seen",{});S.items.forEach(it=>{const a=seen[it.s]=seen[it.s]||[];if(!a.includes(it.n))a.push(it.n)});store.set("kw_seen",seen)}
+  save();run()
+}
 function save(){if(S&&!S.done){S.elapsed=(Date.now()-S.t0)/1000;store.set("kw_session",S)}}
 function run(){
   clearInterval(tick);
