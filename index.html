@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ติวสอบ กว. ภาคีวิศวกร สาขาอุตสาหการ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* แนวคิด: กระดาษเขียนแบบ — พื้นตารางจาง ๆ เส้นกรอบคม ตัวเลขแบบ mono เหมือน title block ของแบบงาน */
+:root{
+  --bg:#f3f5f8; --grid:#e3e8ef; --card:#ffffff; --ink:#14233b; --muted:#5d6b82; --line:#cfd7e3;
+  --accent:#0b5cad; --accent-ink:#ffffff; --accent-soft:#e3eefb; --warn:#b26a00; --warn-bg:#fff3d9;
+  --good:#16794c; --good-bg:#e1f5ea; --bad:#b3261e; --bad-bg:#fde7e5;
+  --body:"IBM Plex Sans Thai",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{color-scheme:dark; --bg:#0e1622; --grid:#17222f; --card:#152030; --ink:#e8eef7; --muted:#9aa8bd; --line:#2b3a4f;
+    --accent:#6fb1ff; --accent-ink:#06213f; --accent-soft:#1b3350; --warn:#ffc864; --warn-bg:#3d2f10;
+    --good:#6fd8a4; --good-bg:#12382a; --bad:#ff9a92; --bad-bg:#45201d;}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.65}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 16px 72px;display:flex;flex-direction:column;gap:16px}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:10px;flex-wrap:wrap}
+header.top .tag{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+h1{font-size:24px;line-height:1.3;margin:0;font-weight:700;cursor:pointer}
+h2{font-size:18px;margin:0;font-weight:600;line-height:1.4}
+h3{font-size:15px;margin:0;font-weight:600}
+p{margin:0}
+.muted{color:var(--muted);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{background:var(--accent);color:var(--accent-ink);border:1px solid var(--accent);border-radius:4px;padding:9px 18px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.sm{padding:5px 12px;font-size:14px}
+.btn:disabled{opacity:.45;cursor:default}
+button:focus-visible,select:focus-visible,input:focus-visible,label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+select,input[type=number]{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:4px;padding:8px 10px;max-width:100%}
+.spec{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;font-size:14px}
+.spec dt{color:var(--muted)} .spec dd{margin:0;font-weight:500}
+.chip{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:3px;padding:1px 7px;color:var(--muted);white-space:nowrap}
+.chip.req{border-color:var(--accent);color:var(--accent)}
+.opt{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:4px;padding:8px 12px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.subj{display:flex;gap:12px;align-items:center;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:10px 12px;width:100%}
+.subj:hover{border-color:var(--accent)}
+.subj .n{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap}
+.list{display:flex;flex-direction:column;gap:8px}
+/* ทำข้อสอบ */
+.bar{position:sticky;top:0;z-index:5;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.timer{font-family:var(--mono);font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
+.timer.low{color:var(--bad)}
+.qhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.qno{font-family:var(--mono);font-weight:600;font-size:18px}
+.qimg{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:4px;padding:8px}
+.qimg img{display:block;height:auto;max-width:100%;cursor:zoom-in}
+.qimg.zoom img{max-width:none!important;cursor:zoom-out}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.ch{min-width:64px;padding:10px 0;border:1px solid var(--line);border-radius:4px;background:var(--card);font-family:var(--mono);font-weight:600;font-size:17px;flex:1}
+.ch:hover:not(:disabled){border-color:var(--accent)}
+.ch.sel{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.ch.ok{background:var(--good-bg);border-color:var(--good);color:var(--good)}
+.ch.no{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.expl{border-left:3px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;font-size:15px;white-space:pre-line}
+.expl.none{border-color:var(--line);background:transparent;color:var(--muted);font-size:14px}
+.verdict{font-weight:600} .verdict.ok{color:var(--good)} .verdict.no{color:var(--bad)}
+.nav{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:5px}
+.nav button{font-family:var(--mono);font-size:13px;padding:6px 0;border:1px solid var(--line);border-radius:3px;background:var(--card);position:relative}
+.nav button.done{background:var(--accent-soft);border-color:var(--accent)}
+.nav button.cur{outline:2px solid var(--ink);outline-offset:1px}
+.nav button.flag::after{content:"";position:absolute;top:2px;right:2px;width:7px;height:7px;border-radius:50%;background:var(--warn)}
+.nav button.ok{background:var(--good-bg);border-color:var(--good)} .nav button.no{background:var(--bad-bg);border-color:var(--bad)}
+.score{font-family:var(--mono);font-size:44px;font-weight:600;line-height:1.1}
+.pass{color:var(--good)} .fail{color:var(--bad)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)} td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.note{background:var(--warn-bg);color:var(--warn);border-radius:4px;padding:8px 12px;font-size:14px}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+@media (max-width:560px){.bar strong{display:none}.bar{padding:8px 10px;gap:8px}h1{font-size:20px}.score{font-size:36px}.ch{min-width:52px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div><div class="tag">COE · Associate Engineer · Industrial</div><h1 id="home">ติวสอบ กว. ภาคีวิศวกร <span style="color:var(--accent)">อุตสาหการ</span></h1></div>
+    <div class="tag" id="bankinfo"></div>
+  </header>
+  <main id="app" class="wrap" style="padding:0"></main>
+  <footer>ข้อสอบและเฉลยอ้างอิงคลังข้อสอบทดสอบความรู้ระดับภาคีวิศวกรที่สภาวิศวกรเผยแพร่ · คำอธิบายจัดทำเพิ่มเพื่อการทบทวน หากเฉลยข้อใดคลาดเคลื่อนให้ยึดตำราและประกาศของสภาวิศวกรเป็นหลัก</footer>
+</div>
+<script src="data.js"></script>
+<script>window.KW_EXPL={};</script>
+<script src="expl.js"></script>
+<script>
+"use strict";
+const KW=window.KW, EX=window.KW_EXPL||{};
+const BASIC=["draw","static","mat","com"], REQ=["safety","ppc","qc"], ELEC=["plant","work","econ","maint"];
+const PER=25, LIMIT=3*3600, PASS=60;
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const app=$("#app");
+let S=null, tick=null;
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pick(code,n,topics){
+  let ids=KW[code].q.map((q,i)=>i+1);
+  if(topics) ids=ids.filter(i=>topics.includes(KW[code].q[i-1][0]));
+  return shuffle(ids).slice(0,n).sort((a,b)=>a-b).map(i=>({s:code,n:i}));
+}
+function fmt(sec){sec=Math.max(0,sec|0);const h=sec/3600|0,m=(sec%3600)/60|0,s=sec%60;return (h?h+":":"")+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
+const Q=it=>KW[it.s].q[it.n-1];
+const total=Object.values(KW).reduce((a,s)=>a+s.q.length,0);
+$("#bankinfo").textContent="คลังข้อสอบ "+total.toLocaleString()+" ข้อ · 12 วิชา";
+
+/* ---------- หน้าแรก ---------- */
+function home(){
+  clearInterval(tick); S=null;
+  const saved=store.get("kw_session",null), hist=store.get("kw_hist",[]);
+  const subjBtn=c=>`<button class="subj" data-practice="${c}"><span class="grow"><strong>${esc(KW[c].en)}</strong><br><span class="muted">${esc(KW[c].th)}</span></span><span class="n">${KW[c].q.length} ข้อ</span></button>`;
+  app.innerHTML=`
+  ${saved&&!saved.done?`<div class="card" style="border-color:var(--accent)"><div class="row"><div class="grow"><h2>มีข้อสอบที่ทำค้างไว้</h2><p class="muted">${esc(saved.title)} · ตอบแล้ว ${Object.keys(saved.ans).length}/${saved.items.length} ข้อ</p></div><button class="btn" id="resume">ทำต่อ</button><button class="btn ghost" id="discard">ทิ้ง</button></div></div>`:""}
+  <div class="card">
+    <h2>รูปแบบการสอบจริง</h2>
+    <dl class="spec">
+      <dt>จำนวนหมวด</dt><dd>2 หมวด: วิชาพื้นฐานทางวิศวกรรม และวิชาเฉพาะทางวิศวกรรม</dd>
+      <dt>แต่ละหมวด</dt><dd>4 วิชา วิชาละ 25 ข้อ รวม 100 ข้อ 100 คะแนน เวลา 3 ชั่วโมง</dd>
+      <dt>เกณฑ์ผ่าน</dt><dd>ไม่น้อยกว่าร้อยละ 60 ในแต่ละหมวด</dd>
+      <dt>ลักษณะข้อสอบ</dt><dd>ปรนัย สุ่มจากคลังข้อสอบของสภาวิศวกร</dd>
+    </dl>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="row"><h2 class="grow">สอบเสมือนจริง · หมวดวิชาพื้นฐาน</h2><span class="chip">100 ข้อ</span></div>
+      <p class="muted">${BASIC.map(c=>esc(KW[c].en)).join(" · ")}</p>
+      <div class="row"><label class="opt"><input type="radio" name="tb" value="1" checked> จับเวลา 3 ชม.</label><label class="opt"><input type="radio" name="tb" value="0"> ไม่จับเวลา</label></div>
+      <div><button class="btn" id="startBasic">เริ่มสอบ</button></div>
+    </div>
+    <div class="card">
+      <div class="row"><h2 class="grow">สอบเสมือนจริง · หมวดวิชาเฉพาะ</h2><span class="chip">100 ข้อ</span></div>
+      <p class="muted">วิชาบังคับ: ${REQ.map(c=>esc(KW[c].en)).join(" · ")}</p>
+      <label class="muted" for="elec">วิชาเลือก (เลือกสอบ 1 วิชา)</label>
+      <select id="elec">${ELEC.map(c=>`<option value="${c}">${esc(KW[c].en)} — ${esc(KW[c].th)}</option>`).join("")}</select>
+      <div class="row"><label class="opt"><input type="radio" name="ts" value="1" checked> จับเวลา 3 ชม.</label><label class="opt"><input type="radio" name="ts" value="0"> ไม่จับเวลา</label></div>
+      <div><button class="btn" id="startSpec">เริ่มสอบ</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>ฝึกทำรายวิชา</h2>
+    <p class="muted">เลือกวิชาและหัวข้อ ทำทีละข้อแล้วดูเฉลยพร้อมคำอธิบายทันที</p>
+    <h3>หมวดวิชาพื้นฐาน</h3><div class="list">${BASIC.map(subjBtn).join("")}</div>
+    <h3>หมวดวิชาเฉพาะ · วิชาบังคับ</h3><div class="list">${REQ.map(subjBtn).join("")}</div>
+    <h3>หมวดวิชาเฉพาะ · วิชาเลือก</h3><div class="list">${ELEC.map(subjBtn).join("")}</div>
+    <h3>ฝึกเพิ่มเติม</h3><div class="list">${subjBtn("or")}</div>
+    <p class="muted">Operations Research ไม่อยู่ในรายวิชาสอบของสาขาอุตสาหการตามประกาศปัจจุบัน จึงไม่ถูกสุ่มในโหมดสอบเสมือนจริง</p>
+  </div>
+  ${hist.length?`<div class="card"><div class="row"><h2 class="grow">ผลสอบที่ผ่านมา</h2><button class="btn ghost sm" id="clearHist">ล้างประวัติ</button></div><table><tr><th>วันที่</th><th>ชุด</th><th class="num">คะแนน</th><th class="num">%</th></tr>${hist.slice().reverse().slice(0,10).map(h=>`<tr><td>${new Date(h.t).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"})}</td><td>${esc(h.title)}</td><td class="num">${h.score}/${h.total}</td><td class="num ${h.score/h.total*100>=PASS?"pass":"fail"}">${Math.round(h.score/h.total*100)}</td></tr>`).join("")}</table></div>`:""}`;
+  const timed=n=>$(`input[name=${n}]:checked`).value==="1";
+  $("#startBasic").onclick=()=>start({mode:"exam",title:"สอบเสมือนจริง หมวดวิชาพื้นฐาน",items:BASIC.flatMap(c=>pick(c,PER)),limit:timed("tb")?LIMIT:0});
+  $("#startSpec").onclick=()=>{const e=$("#elec").value;start({mode:"exam",title:"สอบเสมือนจริง หมวดวิชาเฉพาะ (เลือก "+KW[e].en+")",items:[...REQ,e].flatMap(c=>pick(c,PER)),limit:timed("ts")?LIMIT:0})};
+  app.querySelectorAll("[data-practice]").forEach(b=>b.onclick=()=>setup(b.dataset.practice));
+  if($("#resume")){$("#resume").onclick=()=>{S=saved;S.t0=Date.now()-S.elapsed*1000;run()};$("#discard").onclick=()=>{store.del("kw_session");home()}}
+  if($("#clearHist"))$("#clearHist").onclick=()=>{store.del("kw_hist");home()};
+  scrollTo(0,0);
+}
+
+/* ---------- ตั้งค่าฝึกรายวิชา ---------- */
+function setup(code){
+  const s=KW[code], cnt=s.topics.map((_,i)=>s.q.filter(q=>q[0]===i).length);
+  const nEx=Object.keys(EX[code]||{}).length;
+  app.innerHTML=`<div class="card">
+    <div class="row"><div class="grow"><h2>${esc(s.en)}</h2><p class="muted">${esc(s.th)} · ${s.q.length} ข้อ · มีคำอธิบายแล้ว ${nEx} ข้อ</p></div><button class="btn ghost sm" id="back">กลับ</button></div>
+    <h3>หัวข้อ</h3>
+    <div class="row"><button class="btn ghost sm" id="all">เลือกทั้งหมด</button><button class="btn ghost sm" id="none">ไม่เลือก</button></div>
+    <div class="list">${s.topics.map((t,i)=>cnt[i]?`<label class="opt"><input type="checkbox" class="tp" value="${i}" checked><span class="grow">${esc(t)}</span><span class="chip">${cnt[i]}</span></label>`:"").join("")}</div>
+    <div class="row"><label for="num">จำนวนข้อ</label><select id="num"><option>10</option><option selected>25</option><option>50</option><option>100</option><option value="9999">ทั้งหมด</option></select>
+    <label class="opt"><input type="checkbox" id="order"> เรียงตามลำดับในคลัง</label>
+    ${nEx&&nEx<s.q.length?`<label class="opt"><input type="checkbox" id="onlyEx"> เฉพาะข้อที่มีคำอธิบาย</label>`:""}</div>
+    <div><button class="btn" id="go">เริ่มฝึก</button></div></div>`;
+  $("#back").onclick=home;
+  const tps=()=>[...app.querySelectorAll(".tp")];
+  $("#all").onclick=()=>tps().forEach(c=>c.checked=true); $("#none").onclick=()=>tps().forEach(c=>c.checked=false);
+  $("#go").onclick=()=>{
+    const sel=tps().filter(c=>c.checked).map(c=>+c.value); if(!sel.length)return;
+    let ids=s.q.map((q,i)=>i+1).filter(i=>sel.includes(s.q[i-1][0]));
+    if($("#onlyEx")&&$("#onlyEx").checked) ids=ids.filter(i=>EX[code]&&EX[code][i]);
+    if(!$("#order").checked) shuffle(ids);
+    ids=ids.slice(0,+$("#num").value); if($("#order").checked) ids.sort((a,b)=>a-b);
+    if(!ids.length)return;
+    start({mode:"practice",title:"ฝึก "+s.en,items:ids.map(n=>({s:code,n})),limit:0});
+  };
+  scrollTo(0,0);
+}
+
+/* ---------- ทำข้อสอบ ---------- */
+function start(o){S={...o,ans:{},flag:{},i:0,elapsed:0,t0:Date.now(),done:false};save();run()}
+function save(){if(S&&!S.done){S.elapsed=(Date.now()-S.t0)/1000;store.set("kw_session",S)}}
+function run(){
+  clearInterval(tick);
+  app.innerHTML=`<div class="bar"><strong class="grow">${esc(S.title)}</strong><span class="chip" id="prog"></span><span class="timer" id="timer"></span><button class="btn sm" id="submit">${S.mode==="exam"?"ส่งข้อสอบ":"จบการฝึก"}</button><button class="btn ghost sm" id="quit">ออก</button></div>
+  <div class="card" id="qcard"></div>
+  <div class="card"><div class="row"><h3 class="grow">ข้อทั้งหมด</h3><span class="muted">จุดส้ม = ทำเครื่องหมายไว้</span></div><div class="nav" id="nav"></div></div>`;
+  $("#submit").onclick=()=>{const left=S.items.length-Object.keys(S.ans).length;if(S.mode==="exam"&&left&&!$("#submit").dataset.ok){$("#submit").dataset.ok=1;$("#submit").textContent="ยังไม่ตอบ "+left+" ข้อ · กดอีกครั้งเพื่อส่ง";return}finish()};
+  $("#quit").onclick=()=>{save();home()};
+  tick=setInterval(clock,1000); clock(); show(S.i);
+}
+function clock(){
+  const el=(Date.now()-S.t0)/1000, t=$("#timer"); if(!t)return;
+  if(S.limit){const left=S.limit-el;t.textContent=fmt(left);t.classList.toggle("low",left<600);if(left<=0){finish();return}}
+  else t.textContent=fmt(el);
+  if((el|0)%10===0)save();
+}
+function imgHTML(it){const q=Q(it), sc=it.s==="static"?0.8:0.72;return `<div class="qimg"><img src="img/${it.s}/${it.n}.webp" width="${q[3]}" height="${q[4]}" style="width:${Math.round(q[3]*sc)}px;max-width:max(100%,${Math.round(q[3]*0.5)}px)" alt="โจทย์ ${esc(KW[it.s].en)} ข้อ ${it.n}" loading="lazy"></div>`}
+function explHTML(it){const e=EX[it.s]&&EX[it.s][it.n];return e?`<div class="expl"><strong>คำอธิบาย</strong>\n${esc(e)}</div>`:`<div class="expl none">ข้อนี้ยังไม่มีคำอธิบาย · เฉลยตามคลังข้อสอบสภาวิศวกร</div>`}
+function show(i){
+  S.i=i; const it=S.items[i], q=Q(it), a=S.ans[i], reveal=S.mode==="practice"&&a;
+  $("#qcard").innerHTML=`<div class="qhead"><span class="qno">ข้อ ${i+1}/${S.items.length}</span><span class="chip req">${esc(KW[it.s].en)}</span><span class="muted grow">${esc(KW[it.s].topics[q[0]]||"")}</span><span class="chip" title="เลขข้อในคลังข้อสอบ">#${it.n}</span></div>
+  ${imgHTML(it)}
+  <div class="choices" role="group" aria-label="ตัวเลือกคำตอบ">${Array.from({length:q[2]},(_,k)=>k+1).map(k=>`<button class="ch ${reveal?(k===q[1]?"ok":k===a?"no":""):(a===k?"sel":"")}" data-k="${k}" ${reveal?"disabled":""} aria-pressed="${a===k}">${k}</button>`).join("")}</div>
+  ${reveal?`<p class="verdict ${a===q[1]?"ok":"no"}">${a===q[1]?"ถูกต้อง":"ยังไม่ถูก"} · คำตอบที่ถูกคือข้อ ${q[1]}</p>${explHTML(it)}`:""}
+  <div class="row"><button class="btn ghost" id="prev" ${i?"":"disabled"}>ก่อนหน้า</button><button class="btn ghost" id="flag">${S.flag[i]?"เอาเครื่องหมายออก":"ทำเครื่องหมาย"}</button><span class="grow"></span><button class="btn" id="next" ${i<S.items.length-1?"":"disabled"}>ถัดไป</button></div>`;
+  $("#qcard").querySelectorAll(".ch").forEach(b=>b.onclick=()=>answer(+b.dataset.k));
+  $("#prev").onclick=()=>show(i-1); $("#next").onclick=()=>show(i+1);
+  $("#flag").onclick=()=>{S.flag[i]=!S.flag[i];if(!S.flag[i])delete S.flag[i];save();show(i)};
+  const im=$("#qcard .qimg"); im.onclick=()=>im.classList.toggle("zoom");
+  nav();
+}
+function answer(k){
+  const i=S.i; if(S.mode==="practice"&&S.ans[i])return;
+  if(S.mode==="exam"&&S.ans[i]===k) delete S.ans[i]; else S.ans[i]=k;
+  save(); show(i);
+}
+function nav(){
+  $("#prog").textContent="ตอบแล้ว "+Object.keys(S.ans).length+"/"+S.items.length;
+  $("#nav").innerHTML=S.items.map((it,j)=>{const a=S.ans[j];let c=a?"done":"";if(S.mode==="practice"&&a)c=a===Q(it)[1]?"ok":"no";return `<button class="${c} ${j===S.i?"cur":""} ${S.flag[j]?"flag":""}" data-j="${j}" aria-label="ข้อ ${j+1}">${j+1}</button>`}).join("");
+  $("#nav").querySelectorAll("button").forEach(b=>b.onclick=()=>{show(+b.dataset.j);$("#qcard").scrollIntoView({block:"start"})});
+}
+document.addEventListener("keydown",e=>{
+  if(!S||S.done||!$("#qcard")||e.target.matches("input,select,textarea"))return;
+  if(/^[1-5]$/.test(e.key)&&+e.key<=Q(S.items[S.i])[2])answer(+e.key);
+  else if(e.key==="ArrowRight"&&S.i<S.items.length-1)show(S.i+1);
+  else if(e.key==="ArrowLeft"&&S.i>0)show(S.i-1);
+});
+
+/* ---------- ผลสอบและเฉลย ---------- */
+function finish(){
+  clearInterval(tick); S.elapsed=Math.min((Date.now()-S.t0)/1000,S.limit||1e9); S.done=true; store.del("kw_session");
+  const by={}; let score=0;
+  S.items.forEach((it,i)=>{const b=by[it.s]=by[it.s]||{ok:0,n:0};b.n++;if(S.ans[i]===Q(it)[1]){b.ok++;score++}});
+  const n=S.items.length, pct=n?score/n*100:0, pass=pct>=PASS;
+  if(S.mode==="exam"){const h=store.get("kw_hist",[]);h.push({t:Date.now(),title:S.title,score,total:n});store.set("kw_hist",h.slice(-30))}
+  app.innerHTML=`<div class="card">
+    <div class="row"><div class="grow"><h2>${esc(S.title)}</h2><p class="muted">ใช้เวลา ${fmt(S.elapsed)} · ตอบ ${Object.keys(S.ans).length}/${n} ข้อ</p></div><button class="btn" id="again">กลับหน้าแรก</button></div>
+    <div class="row" style="align-items:baseline"><span class="score ${pass?"pass":"fail"}">${score}/${n}</span><span class="${pass?"pass":"fail"}" style="font-weight:600">${pct.toFixed(0)}% · ${S.mode==="exam"?(pass?"ผ่านเกณฑ์ร้อยละ 60":"ยังไม่ผ่านเกณฑ์ร้อยละ 60"):(pass?"ทำได้ดี":"ควรทบทวนเพิ่ม")}</span></div>
+    <table><tr><th>วิชา</th><th class="num">ถูก</th><th class="num">จำนวนข้อ</th><th class="num">%</th></tr>${Object.keys(by).map(c=>`<tr><td>${esc(KW[c].en)}</td><td class="num">${by[c].ok}</td><td class="num">${by[c].n}</td><td class="num ${by[c].ok/by[c].n*100>=PASS?"pass":"fail"}">${Math.round(by[c].ok/by[c].n*100)}</td></tr>`).join("")}</table>
+  </div>
+  <div class="card"><div class="row"><h2 class="grow">เฉลยพร้อมคำอธิบาย</h2>
+    <label class="opt"><input type="radio" name="f" value="all" checked> ทุกข้อ</label><label class="opt"><input type="radio" name="f" value="wrong"> เฉพาะข้อที่ผิด</label><label class="opt"><input type="radio" name="f" value="blank"> ข้อที่ไม่ได้ตอบ</label></div>
+    <div id="rev" class="list" style="gap:20px"></div><div><button class="btn ghost" id="more" hidden>แสดงเพิ่ม</button></div></div>`;
+  $("#again").onclick=home;
+  let shown=0, list=[];
+  const draw=reset=>{
+    if(reset){const f=$("input[name=f]:checked").value;list=S.items.map((it,i)=>i).filter(i=>{const a=S.ans[i],ok=a===Q(S.items[i])[1];return f==="all"||(f==="wrong"&&a&&!ok)||(f==="blank"&&!a)});shown=0;$("#rev").innerHTML=list.length?"":'<p class="muted">ไม่มีข้อในกลุ่มนี้</p>'}
+    const part=list.slice(shown,shown+20); shown+=part.length;
+    $("#rev").insertAdjacentHTML("beforeend",part.map(i=>{const it=S.items[i],q=Q(it),a=S.ans[i],ok=a===q[1];return `<div class="list"><div class="qhead"><span class="qno">ข้อ ${i+1}</span><span class="chip req">${esc(KW[it.s].en)}</span><span class="muted grow">${esc(KW[it.s].topics[q[0]]||"")}</span><span class="chip">#${it.n}</span></div>${imgHTML(it)}<p class="verdict ${ok?"ok":"no"}">${a?(ok?"ตอบถูก":"ตอบข้อ "+a+" ยังไม่ถูก"):"ไม่ได้ตอบ"} · คำตอบที่ถูกคือข้อ ${q[1]}</p>${explHTML(it)}</div>`}).join(""));
+    $("#rev").querySelectorAll(".qimg").forEach(im=>im.onclick=()=>im.classList.toggle("zoom"));
+    $("#more").hidden=shown>=list.length; $("#more").textContent="แสดงเพิ่ม (เหลือ "+(list.length-shown)+" ข้อ)";
+  };
+  app.querySelectorAll("input[name=f]").forEach(r=>r.onchange=()=>draw(true)); $("#more").onclick=()=>draw(false); draw(true);
+  scrollTo(0,0);
+}
+$("#home").onclick=()=>{if(S&&!S.done)save();home()};
+addEventListener("pagehide",save);
+
+/* ---------- เปิด/ปิดเว็บโดยผู้ดูแล (แก้ config.json) ---------- */
+fetch("config.json",{cache:"no-store"}).then(r=>r.json()).catch(()=>({open:true})).then(c=>{
+  if(c.open===false){app.innerHTML=`<div class="card"><h2>ขณะนี้ปิดให้บริการชั่วคราว</h2><p class="muted">${esc(c.message||"ผู้ดูแลปิดเว็บไว้ กรุณากลับมาใหม่ภายหลัง")}</p></div>`}
+  else home();
+});
+</script>
+</body>
+</html>
